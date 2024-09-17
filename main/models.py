@@ -7,9 +7,8 @@ class Product(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     
-
     @property
     def __str__(self):
-        return f"name : {self.name}, price : {self.price}"
+        return self.name
     
 
