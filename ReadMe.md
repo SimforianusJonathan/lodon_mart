@@ -1,11 +1,11 @@
 # LODON MART 
-Nama : Simforianus Jonathan Flonas Harefa
-NPM : 2306217430
-Kelas : PBP E
-
+---
 Tautan menuju PWS yang sudah di deploy :
 [lodon mart link](http://simforianus-jonathan-lodonmart.pbp.cs.ui.ac.id/)
+---
 
+## TUGAS 1
+### Step By Step
 Step by step membuat proyek django :
 1. membuat direktori lokal bernama "lodon_mart" (sesuai nama e-commerce saya)
 2. Membuat dan mengaktifkan virtual environment dengan tujuan mengisolasi package serta dependencies dari aplikasi agar tidak bertabrakan dengan versi lain yang ada pada komputer
@@ -18,8 +18,6 @@ Step by step membuat proyek django :
 Step by step membuat aplikasi main pada proyek 'lodon_mart' :
 1. Membuat aplikasi baru dengan nama 'main' dengan instruksi 'python manage.py startapp main'. Akan tercipta direktori baru yang berisi struktur awal untuk aplikasi django lodon_mart.
 2. Mendaftarkan aplikasi main ke dalam proyek 'lodon_mart' dengan menambahkan string 'main' pada list Installed_Apps pada file settings.py di dalam direktori proyek lodon_mart.
-
-
 
 Step by step membuat fungsi pada views.py untuk dikembaklikan ke template html :
 1. Membuat terlebih dahulu direktori baru bernama 'template' di dalam direktori 'main' lalu membuat file html yang berisikan format untuk menampilkan nama, kelas, dan npm.
@@ -70,7 +68,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "http://simforianus-jonathan-lodonmar
 8. Buka proyek lodonmart lewat akses sidebar dan menunggu status yang awalnya Building menjadi Running.
 9. URL deployment dapat diakses.
 
-# Bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya
+### Bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya
 ![alt text](image.png)
 
 Penjelasan : 
@@ -82,7 +80,7 @@ Penjelasan :
 5. models.py berisi model yang didefinisikan developer yang digunakan untuk mengambil data yang diperlukan dari database lalu dilakukan perhitungan dan manipulasi data yang diperlukan untuk respons kembali dan akan dilakukan rendering kembali yang dipanggil di file views.py.
 6. Template html seabagai interface / tampilan yang dilihat user (html,css, js). django akan me render template html dengan menggabung data yang dihasilkan sebagai respond dan dikembalikan oleh aplikasi melalui internet kembali kepada user. respond berupa perubahan pada halaman halaman html tergantung request yang diberikan oleh user pada awal kesempatan.
 
-# GIT RELATED
+### GIT RELATED
 Git merupakan suatu perangkat lunak pengendali versi atau proyek manajemen kode perangkat lunak.
 
 Fungsi Git dalam pengembangan perangkat lunak :
@@ -111,7 +109,7 @@ Hal paling lainnya adalah kolaborasi. Lewat git sebagai proyek manajemen kode in
 4. Security
 Git dapat memebrikan kita untuk memilih  orang orang tertentu (developer) yang ingin diberikan izin untuk diberikan kontrol akses terhadap source code pada repositori yang ada serta akses untuk melakukan perubahan terhadap kode tersebut.
 
-# DJANGO FOR STARTING POINT
+### DJANGO FOR STARTING POINT
 Alasan mengapa framework django menjadi opsi sebagai awal untuk mempelajari pengembangan perangkat lunak :
 
 1. Dokumentasi 
@@ -126,11 +124,25 @@ Sebagai salah satu mahasiswa Fasilkom UI yang sempat belajar DDP1 di semester 1 
 4. Security
 Fitur keamanan django yang dibuat untuk mengantisipasi serangan seperti Cross-Site Scripting (memasukkan kode html ke suatu website seakan akan merupakan suatu kode bawaan dari website tersebut yang dapat menyebabkan kerusakan situs / pencurian info pribadi), Cross-Site Request Forgery (pemalsuan permintaan izin akses dari suatu website yang biasanya untuk pencurian info pribadi), dan SQL Injection (memanfaatkan celah keamanan untuk mengakses data dari database yang tidak diberikan akses).
 
-# Django and ORM 
+#### Django and ORM 
  ORM sendiri adalah teknik pemrograman untuk menggunakan database relasional untuk menyimpan data dalam bentuk objek. Bahas pemrograman yang digunakan harus support OOP untuk dapat menggunakan database relasional sebagai penyimpanan.
 
 model django disebut ORM (Object-Relational Mapping).
 Hal tersebut dapat dikatakan dengan alasan dengan definisi suatu class dan instansiasi objek lewat bahas pemrograman python dapat digunakan untuk berinteraksi dengan database tanpa harus melakukan query secara terpisah untuk berinteraksi database.
+
+---
+## TUGAS 2
+### Step by Step 
+
+### Pentingnya Data Delivery dalam Implementasi Platform
+
+### XML dan JSON
+
+### Fungsi Method is_valid() pada Form Django
+
+### CSRF Token Pada Django
+
+### Screenshoot Postman
 
 
 

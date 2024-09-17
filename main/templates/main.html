@@ -1,8 +1,66 @@
-<h1>Lodon Mart</h1>
+{% extends 'base.html' %}
+ {% block content %}
+ <h1>Lodon Mart</h1>
 
-<h5>NPM: </h5>
-<p>{{npm}}</p> <!-- Ubah sesuai dengan npm kamu -->
-<h5>Name: </h5>
-<p>{{name}}</p> <!-- Ubah sesuai dengan nama kamu -->
-<h5>Class: </h5>
-<p>{{class}}</p> <!-- Ubah sesuai dengan kelas kamu -->
+ <h5>NPM: </h5>
+ <p>{{ npm }}<p>
+
+ <h5>Name:</h5>
+ <p>{{ name }}</p>
+
+ <h5>Class:</h5>
+ <p>{{ class }}</p>
+
+{% if not products %}
+<br>
+<p>Belum ada data product pada lodon mart.</p>
+
+{% else %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<table>
+    <br>
+  <tr>
+    <th>name</th>
+    <th>price</th>
+    <th>description</th>
+  </tr>
+
+  {% comment %} Berikut cara memperlihatkan data product di bawah baris ini 
+  {% endcomment %} 
+  {% for each_product in products %}
+  <tr>
+    <td>{{each_product.name}}</td>
+    <td>{{each_product.price}}</td>
+    <td>{{each_product.description}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product' %}">
+  <button>Add New Product</button>
+</a>
+{% endblock content %}
