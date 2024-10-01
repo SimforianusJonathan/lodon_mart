@@ -10,15 +10,29 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from main.utils import format_price
 
 @login_required(login_url='/login')
 def show_main(request):
     products =  Product.objects.filter(user=request.user)
+
+    formatted_products = [
+        {
+            'id': product.id,
+            'name': product.name,  # Replace with actual field names
+            'price': product.price,
+            'formatted_price': format_price(product.price),
+            'description':product.description
+            # Add any other fields you need
+        }
+        for product in products
+    ]
+
     context = {
         'name': request.user.username,
         'npm' : '23062217430',
         'class': 'PBP E',
-        'products': products,
+        'products': formatted_products,
         'last_login': request.COOKIES['last_login'],
     }
 
@@ -85,3 +99,26 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def edit_product(request, id):
+    # Get mood entry berdasarkan id
+    eachProduct = Product.objects.get(pk = id)
+
+    # Set mood entry sebagai instance dari form
+    form = ProductForm(request.POST or None, instance=eachProduct)
+
+    if form.is_valid() and request.method == "POST":
+        # Simpan form dan kembali ke halaman awal
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    # Get mood berdasarkan id
+    product = Product.objects.get(pk = id)
+    # Hapus mood
+    product.delete()
+    # Kembali ke halaman awal
+    return HttpResponseRedirect(reverse('main:show_main'))

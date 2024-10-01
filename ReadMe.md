@@ -602,3 +602,318 @@ Fungsi lain dari cookies :
 
 Keamanan Cookies :
 Tidak semua cookies aman digunakan oleh user yang sedang mengakses situs web. Contohnya seperti cookies yang menyimpan informasi penting dan privacy seperti authentication token yang mungkin dapat diakses oleh javascript admin web, cookies yang disetel oleh pihak lain dalam web seperti pengiklan sehingga dapat dilakukan pelacakan user di berbagai situs web, dan juga jika user mengizinkan cookies yang tidak memiliki secure setting / Httponly yang sehingga rentan terjadinya cross site scripting (XSS).
+
+## TUGAS 4
+
+### Step by Step Implementasi fungsi untuk mengedit produk
+1. Buka views.py pada direktori aplikasi(contoh : main).
+2. Buatlah fungsi baru dengan parameter request dan juga id produk untuk mengedit field field dari objek model yang telah kita buat sebelumnya yang ada di database.
+3. Definisikan produk yang ingin dimabil berdasarkan primary key / id. Lalu definiskan objek ProductForm dengan parameter request berupa post, dan instance nya produk yang telah didefiniskan sebelumnya.
+4. Lakukan validasi isi form dengam method bawaan "isValid()", lalu simpan perubahan form dan membuat response berupa redirecting ke halaman untuk user setelah edit data produk.
+5. Melakukan rendering ke halaman template html tempat hasil rendering setelah proses edit nilai dari data produk yang diinginkan(contoh: render ke halaman "main.html").
+6. Buka urls.py di direktori aplikasi (contoh : main) dan import method untuk edit data dari main.views lalu di dalam list url yang ingin dirutekan, definisikan pola url beserta dengan fungsi edit yang bersesuaian agar dapat diproses oleh request yang diterima oleh django.
+contoh :
+```python
+path('edit-product/<uuid:id>', edit_product, name='edit_product')
+```
+path(...) -> Mendefiniskan pola url
+- 'edit-product/<uuid:id>' -> Pola URL yang akan ditangani adalah "edit-product/<uuid:id>" di mana tag tersebut merujuk kepada uuid dari masing masing produk yang dibuat oleh akun user yang berbeda-beda.
+- "edit_product" -> fungsi pada views.py yang dipanggil saat url ini diakses
+- name = 'edit_product' -> nama yang diberikan kepada pola url yang didefinisikan ini. Pemberian nama ini berguna untuk membuat referensi URL secara dinamis di template atau di bagian lain dari aplikasi Django
+
+7.Pada template / halaman html tujuan dari fungsi dari views.py direktori aplikasi untuk menampilkan produk yang telah dibuat oleh user, tambahkan tag referensi <a> dengan atribut template block untuk url yang akan dirutekan ke fungsi di views.py dan primary key untuk masing-masing produk dan button sebagai event pemicu untuk memberikan request berupa POST (menghapus data objek produk yang dituju dari database).
+contoh :
+```html
+<td>
+    <a href="{% url 'main:delete_product' each_product.pk %}">
+        <button>
+            Delete Product
+        </button>
+    </a>
+</td>
+```
+
+### Step by Step Implementasi fungsi untuk menghapus produk
+1. Buka views.py pada direktori aplikasi(contoh : main).
+2. Buatlah fungsi baru dengan parameter request dan juga id produk untuk menghapus objek model yang telah kita buat sebelumnya yang ada di database.
+3. Definisikan produk yang ingin dimabil berdasarkan primary key / id. menghapus produk yang telah didefiniskan dengan method delete() lalu membuat response berupa redirecting ke halaman untuk user setelah menghapus data produk.
+4.  Buka urls.py di direktori aplikasi (contoh : main) dan import method untuk hapus data dari main.views lalu di dalam list url yang ingin dirutekan, definisikan pola url beserta dengan fungsi hapus yang bersesuaian agar dapat diproses oleh request yang diterima oleh django.
+contoh :
+```python
+path('delete-product/<uuid:id>', delete_product, name='delete_product')
+```
+path(...) -> Mendefiniskan pola url
+- 'delete-product/<uuid:id>' -> Pola URL yang akan ditangani adalah "delete-product/<uuid:id>" di mana tag tersebut merujuk kepada uuid dari masing masing produk yang dibuat oleh akun user yang berbeda-beda.
+- "delete" -> fungsi pada views.py yang dipanggil saat url ini diakses
+- name = 'delete' -> nama yang diberikan kepada pola url yang didefinisikan ini. Pemberian nama ini berguna untuk membuat referensi URL secara dinamis di template atau di bagian lain dari aplikasi Django
+
+5. Pada template / halaman html tujuan dari fungsi dari views.py direktori aplikasi untuk menampilkan produk yang telah dibuat oleh user, tambahkan tag referensi <a></a> dengan atribut template block untuk url yang akan dirutekan ke fungsi di views.py dan primary key untuk masing-masing produk dan button sebagai event pemicu untuk memberikan request berupa POST (mengedit field data objek produk yang dituju dari database).
+contoh :
+```html
+<td>
+    <a href="{% url 'main:edit_product' each_product.pk %}">
+        <button>
+            Edit product
+        </button>
+    </a>
+</td>
+```
+
+### Step by Step kustomisasi desain pada template HTML menggunakan CSS atau CSS framework (Tailwind)
+1. Pastikan kita telah menambahkan tag meta ```<meta name="viewport">``` untukk menyesuaikan ukuran perangkat mobile.
+2. Menambahkan script source untuk menyambungkan template django dengan tailwind
+```html
+<script src="https://cdn.tailwindcss.com">
+    </script>
+```
+
+#### Kustomisasi Halaman Login
+1. Mengedit halaman ```login.html``` dengan Menambahkan kustomisasi dengan tag <div></div>untuk title halaman untuk login contoh tulisan "Login Account,".
+2. Menambahkan kustomisasi dengan tag <div></div> input untuk username dan password dengan tipe text untuk input username dan tipe password untuk input password 
+3. Menambahkan kustomisasi dengan tag <div></div> untuk tombol yang dilakukan untuk submit data untuk login user
+4. Menambahkan if block dengan parameter messages (hasil dari percobaan login) dan iterasi tiap message dengan block for loop  dan berikan kondisi kustomisasi penyampaian pesan (warna,size,bentuk,dll) sesuai dengan respon (sukses,error, dan pesan default).
+5. Menambah keterangan di bawah tag input untuk memilih opsi melakukan pendaftaran akun bila belum mmeiliki akun di data base dengan tag <a></a> dengan template block url yang mengarahkan ke fungsi untuk mendaftar akun baru di views.py pada direktori aplikasi (contoh :main).
+
+#### Kustomisasi Halaman Register
+1. Mengedit halaman ```register.html``` dengan Menambahkan kustomisasi dengan tag <div></div>untuk title halaman untuk login contoh tulisan "Create Account,".
+2. Menambahkan block for loop untuk iterasi tiap field pada form django yang akan menampilkan label field, dan field untuk mengisi data, baik untuk username maupun password.
+3. Menambahkan if block untuk memberi ikon peringatan bila ada kesalahan dalam validasi input pembuatan akun user baru, lalu akan menampilkan pesan kesalahan / error yang terjadi
+4. Menambahkan kustomisasi dengan tag <div></div> berisi tag button yang memiliki tipe submit untuk melakukan registrasi akun.
+5. Menambahkan if block dengan parameter messages (hasil dari percobaan registrasi) dan iterasi tiap message dengan block for loop  dan berikan kondisi kustomisasi penyampaian pesan (warna,size,bentuk,dll) sesuai dengan respon (sukses,error, dan pesan default).
+6. Menambah keterangan di bawah tag input untuk memilih opsi melakukan login bila sudah mmeiliki akun di data base dengan tag <a></a> dengan template block url yang mengarahkan ke fungsi untuk login akun baru di views.py pada direktori aplikasi (contoh :main).
+
+
+#### Kustomisasi Halaman Pembuatan Produk
+1. Mengedit halaman ```create_product.html``` dengan Menambahkan kustomisasi dengan tag <div></div>untuk title halaman untuk login contoh tulisan "Create Product,".
+2. Memnambahkan kustomisasi dengan tag <form></form> dengan method POST yang didalamnya terdapat for loop block untuk tiap field di dalam form di mana akan menampilkan label field dengan tag <label></label> dan field untuk mengisi data untuk objek model produk yang ingin dibuat.
+3. Menambahkan keterangan berdasarkan hasil POST field, untuk menampilkan teks bantuan jika field tersebut menyediakan dan juga esan error apabila terdapat kesalahan saat input data untuk pembuatan produk.
+4. Menambahkan kustomisasi dengan tag <div></div> berisi tag button yang memiliki tipe submit untuk melakukan pembuatan produk.
+
+### Tahapan sebelum kustomisasi
+1. Pada directory root, buatlah directori static/css.
+2. Buatlah berkas css bernama "global.css".
+3. Isi kustomisasi global.css sesuai keinginan.
+4. Pada "base.html" di direktori root project, tambahkan baris di bawah untuk menghubungkan global.css dan script Tailwind ke base.html:
+```html
+...
+<link rel="stylesheet" href="{% static 'css/global.css' %}"/>
+...
+```
+
+### Step by Step kustomisasi halaman daftar product
+1. Mengedit halaman dengan Menambahkan kustomisasi dengan tag <div></div>untuk title halaman untuk menampilkan daftar produk dengan contoh dialkukan pada halaman utama ```main.html```.
+2. Menambahkan kustomisasi dengan tag <div></div> yang jika kita memiliki halaman html berisi template "card" untuk menampilkan informasi secara terstruktur dan estetik,dapat kita cantumkan template block "include halaman html (contoh : ```card_info.html```)" yang mengambil 2 parameter variabel untuk judul dan isi fieldnya.
+3. Menambahkan kustomisasi dengan tag <div></div> untuk menunjukkan cookies yang diinginkan seperti last login.
+4. Menambahkan kustomisasi dengan tag <div></div> untuk menambahkan tag baru <a></a> dengan template block url yang diarahkan ke fungsi untuk membuat produk baru di views.py direktori aplikasi (contoh : main)
+5. Menambahkan if block dengan parameter produk (mengecek ada atau tidak di dalam database [minimal 1] ), akan ditambahkan tag <img></img> dengan source nya berupa template block static untuk menampilkan foto yang diinginkan yang sudah kita alokasikan terlebih dahulu di direktori (contoh : ```rootProject/static/image/sedih_banget.png```) diikuti dengan tag <p></p> dengan keterangan contoh "belum ada produk".
+6. Menambahkan kustomisasi dengan tag <div></div> yang berisi block for loop untuk iterasi setiap produk yang ada di database yang dimiliki user, jika ada akan dipanggil block"include halaman html (contoh : ```card_product.html```)" dengan keterangan ```... with each_product=each_product %``` dengan keterangan each_product = nama variabel untuk tiap produk yang diiterasi dalam for loop block.
+
+#### Jika belum membuat halaman template html untuk menampilkan produk
+1. Membuat halaman card_product.html.
+2. Menambahkan kustomisasi dengan tag <div></div> untuk menambahkan nama Produk sebagai highlight utama (jika ada di dalam model objek, bisa tambahkan keterangan waktu pembuatan produk).
+3. Menambahkan kustomisasi dengan tag <div></div> untuk menambahkan keterangan label untuk field di model seperti harga.
+4. Mengambil data harga dari produk tersebut (diformat maupun belum diformat) menggunakan template block variable.
+5. Menambahkan kustomisasi dengan tag <div></div> untuk menambahkan keterangan label untuk field di model seperti deskripsi dari produk.
+
+### Step by step membiat button untuk edit dan hapus
+1. Masih di dalam card_product.html.
+2. Menambahkan beberapa "custom button" dengan cara menggunakan tag <a></a> untuk membuat tombol tersebut secara manual.
+3. tag <a></a>  merujuk referensi menggunakan template block django url untuk membuat URL dinamis berdasarkan nama view (fungsi pada views.py) dalam namespace main(contoh nama direktori aplikasi) baik untuk melakukan edit terhadap data produk maupun untuk menghapus produk.
+contoh :
+ ```html
+ <a href="{% url 'main:edit_product' each_product.pk %}"...>
+    <svg xmlns="http://www.w3.org/2000/svg"...>
+    ...
+    </svg>
+</a>
+ <a href="{% url 'main:delete_product' each_product.pk %}"...>
+    <svg xmlns="http://www.w3.org/2000/svg"...>
+    ...
+    </svg>
+</a>
+ ```
+ Keterangan :
+ Kita dapat menggunakan SVG (Scalable Vector Graphics) untuk menampilkan ikon.
+
+4. Bisa juga menambahkan button kustomisasi dengan tag<a></a> juga yang berfungsi untuk menandakan produk tersebut favorit atau tidak dan dapat tersimpan bahkan saat logout dan login kembali ke akun user yang sama.
+5. Kita dapat mengimplementasikan logika tersebut menggunakan javascript dengan contoh kode seperti di bawah ini :
+
+```javascript
+<script>
+    function toggleStar(element, productId) {
+        const starIcon = element.querySelector('.star-icon');
+        const starredProducts = JSON.parse(localStorage.getItem('starredProducts')) || {};
+
+        // Toggle star state for this product
+        const isStarred = starIcon.classList.toggle('text-yellow-500');
+        starredProducts[productId] = isStarred;
+
+        // Store the updated star states in local storage
+        localStorage.setItem('starredProducts', JSON.stringify(starredProducts));
+    }
+
+    function loadStarState(productId) {
+        const starredProducts = JSON.parse(localStorage.getItem('starredProducts')) || {};
+        const starIcon = document.querySelector(`.star-icon[data-product-id="${productId}"]`);
+
+        if (starredProducts[productId]) {
+            starIcon.classList.add('text-yellow-500');
+        }
+    }
+
+    // Load the star state when the page loads for all products
+    window.onload = function() {
+        const productElements = document.querySelectorAll('.star-icon');
+        productElements.forEach((element) => {
+            const productId = element.dataset.productId;
+            loadStarState(productId);
+        });
+    };
+</script>
+```
+Keterangan : 
+- Fungsi toggleStar untuk mengubah status bintang ketika ikon bintang di klik (asumsi bentuk tombol bintang) dan berubah menjadi warna kuning dan diperbarui ke dalam localstorage.
+- Fungsi loadStarState untk memuat status bintang saat halaman utama setelah login kembali dimuat dan mengambil status bintang dari localstorage
+- Event Window.onload untuk menjalankan fungsi tersebut secara otomatis saat halaman website setelah login akun yang sama dibuka.
+
+### Step by step membuat navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop
+1. Membuat file html navigation_bar.html (jika belum ada).
+2. Menambahkan kustomisasi dengan tag <nav></nav> sebagai elemen utama untuk navigation bar, diberikan kelas untuk mengatur gaya (latar belakang, bayangan, posisi, dan lebar).
+3. Menambahkan kustomisasi dengan tag <div></div> untuk mengatur lebar maksimum dari navigation bar agar responsif, dengan margin otomatis di kiri dan kanan untuk memusatkan konten. Bisa juga menggunakan flexbox.
+4. Menambahkan tag header <h1></h1> untuk menampilkan nama toko dibagian kiri atas navigation bar.
+5. Menambahkan if block untuk menentukan user terautentikasi dengan method is_authenticated, jika ada, di bagian kanan atas navbar akan menampilkan pesan opsional (contoh : ```<span>Welcome, {{user.username}} </span>)```) dan akan muncul opsi untul logout di bagian kanan pesan (bisa dengab button atau kustomisasi manual) dengan tag <a></a> yang menggunakan template block url untuk mengarahkan ke fungsi logout di views.py direktori aplikasi (contoh : main).
+6. Menambahkan block else (jika user tidak terautentikasi) dan diarahkan ke halaman login lagi dengan tag <a></a> dengan fungsi login di views.py direktori aplikasi. Dan juga untuk muncul opsi untuk melakukan registrasi dengan menambah tag <a></a> baru yang menggunakan template block url untuk mengarahkan ke fungsi register di views.py direktori aplikasi.
+7. Menambahkan kustomisasi dengan tag <div></div> untuk menaruh tag button ```<button class="mobile-menu-button">``` untuk membuka dan menutup menu mobile dan menggunakan SVG untuk ikon tiga garis (hamburger) yang umum digunakan untuk menu mobile.
+8. Tulisakan struktur yang sama untuk if block di bagian PC Menu / Website Menu.
+9. Setelah itu tambahkan kode Javascript untuk mengambil tombol dan menu mobile dari DOM dan menambahkan event listener untuk tombol yang saat diklik, kelas hidden pada menu di-toggle, yang memungkinkan menu muncul atau menghilang (tentunya dilakukan secara hidden / indirect).
+10. Tambahkan navigation_bar.html pada halaman html untuk login, halaman utama, dan halaman register dengan template block include dengan kode :
+
+```html
+...
+{% block content %}
+{% include 'navigation_bar.html' %}
+...
+```
+
+### Urutan prioritas pengambilan CSS selector untuk elemen HTML 
+
+Terdapat Beberapa CSS Selector untuk suatu elemen HTML. CSS selectors dapat termasuk dalam salah satu urutan berikut :
+
+1. Inline Style = prioritas utama
+inline style merupakan salah satu varian CSS Selector dengan prioritas tertinggi karena ditulis langsung di dalam  elemen HTML menggunakan atribut style.
+Template (contoh dengan tag div) :
+```css
+<div style= "color: ...; font:...;...">Text(blablabla...)</div>
+```
+
+2. ID Selectors = prioritas kedua
+Selector CSS dengan me-refer ke elemen html yang dituju menggunakan ID dari elemen html yang diingin kan dan biasanya diawali dengan tanda hashtag
+Contoh Template :
+```css
+(#<id>{
+    color:...;
+    ...})
+```
+
+3. Classes Selector (Class,Attribute,Peseudo-class selectors) = prioritas ketiga
+Selector CSS yang mencakup class yang biasanya diawali dengan tanda titik(.), memiliki atribut seperti type,color,dll; serta pseudo class. 
+Contoh Template :
+```css
+(.<namaClass>{
+    color:...;
+    ...})
+```
+
+4. Type / Element Selector(Tag Selector) = prioritas terakhir
+Selector CSS yang digunakan sesuai dengan nama tag HTML yang dingin diberikan style (e.g. div, p, h1, h2, span, ...).
+Contoh template :
+```css
+div {
+    size:...;
+    ...
+}
+p {
+    text:...;
+    ...
+}
+
+/* selector khusus untuk semua elemen html yang memiliki prioritas terendah*/
+
+*{
+    color:...;
+    ...
+}
+```
+
+### Responsive design sebagai konsep yang penting dalam pengembangan aplikasi web
+1. Kemudahan Akses bagi Pengguna
+Desain aplikasi web yang responsif memungkinkan client / user untuk mengakses internet melalui perangkat pc dan mobile dapat mengakses informasi dengan baik. Serta dengan desain yang responsif memberikan adjustment terhadap tampilan pengguna saat aplikasi web diakses agar nyaman saat digunakan walau melalui perangkat yang berbeeda-beda.
+
+2. Optimisasi Mesin Pencarian
+Lebih mudah ditemukan oleh mesin pencarian karena secara logika akan memiliki traffic maupun views yang lebih tinggi dari aplikasi web lain karena desain aplikasi website yang responsif yang memudahhkan akses bagi pengguna dan memberi pengalaman user yang menyenangkan.
+
+3. Efisiensi Biaya Pengembangan
+Dengan desain yang responsif, hal tersebut dapat menghemat biaya karena tidak perlu membuat versi berbeda dengan dana yang sama untuk akses dari perangkat yang berbeda pula, hanya perlu sedikit adjustment saja agar user dapat mengaksesnnya dengan nyaman dan responsif.
+
+Contoh aplikasi yang sudah menerapkan responsive design :
+Social media : facebook,instagram,twitter (current : X), thread, youtube etc.
+Aplikasi bidang platform pembelajaran /edukasi : W3schools,Ruanguru,Zenius,Quipper, etc.
+
+Contoh aplikasi yang belum menerapkan responsive design:
+- Untuk beberapa perusahaan besar yang memiliki web, kurang lebih sudah mengaplikasikan responsive design pada aplikasi web mereka. Beberapa aplikasi yang "mungkin" belum menerapkan responsive design adalah beberapa perusahaan kecil / umkm yang memulai melakukan pengembangan aplikasi web yang "mungkin" baru bisa diakses melalui salah satu gadget seperti mobile saja, atau pc saja. 
+- Serta beberapa apikasi web milik pemerintah yang hanya tersedia bagi para pegawai untuk absen untuk beberapa kementrian yang aplikasi web nya baru bisa diakses secara mobile dengan melakukan scan kode QR(QuickResponse).
+
+### Margin, Border, dan Padding serta Implementasinya
+Margin  dapat diartikan sebagai suatu ruang batasan di sekitar(luar) border yang menciptakan jarak antara  elemen-elemen (<div>,<p>,<h>, etc.) sekitar dan mengontrol ruang diluar elemen.
+
+Border dapat diartikan sebagai garis yang mengelilingi elemen yang dapat memiliki style(dash,color,radus,etc.)
+
+Untuk padding sendiri dapat diartikan sebagai ruang yang ada di antara content(elemen-elemen) dan border yang berfungsi menciptakan jarak antara elemen dan bordernya.
+
+Cara implementasinya :
+
+```html
+<!--membuat elemen div dengan nama class "container"*/-->
+    <div class ="container">
+        contain dangerous content
+    </div>
+```
+
+```css
+/* membuat elemen div dengan nama class "container"*/
+    .container{
+        margin: 30px;
+        margin-top: 10px; /* Margin khusus di atas */
+        margin-right: 15px; /* Margin khusus di kanan */
+        margin-bottom: 10px; /* Margin khusus di bawah */
+        margin-left: 15px; /* Margin khusus di kiri */
+
+        padding:12px;
+        padding-top: 10px; /* Padding khusus di atas */
+        padding-right: 20px; /* Padding khusus di kanan */
+        padding-bottom: 10px; /* Padding khusus di bawah */
+        padding-left: 20px; /* Padding khusus di kiri */
+
+        border: 1px red;
+        border-top: 1px dashed red; /* Border atas dengan gaya dashed dan warna merah */
+        border-radius: 5px; /* Membuat sudut border menjadi melengkung */
+    }
+```
+
+###  Konsep flex box dan grid layout beserta kegunaannya
+Pada CSS, terdapat 2 sistem layout untuk distribusi dan partisi ruang di dalam elemen konten agar memudahkan pengembang web agar lebih efisien. Sistem tersebut, antara lain :
+
+- Flexbox
+Flexible Box Layout merupakan sistem layout yang cenderung bersifat 1 dimensi dengan 2 kemungkinan pengaturan untuk semua elemen. Penempatannya bisa dalam satu baris atau dalam satu kolom.
+
+Fungsi :
+1. Penempatan elemen-elemen yang lebih terintegrasi dan terpusat sehingga distribusi space untuk elemen lain dapat diatur dengan lebih rapih dan proporsional.
+2. Mengimplementasikan responsive design yang menyesuaikan ukuran dan posisi elemen yang ada saat ukuran layar di adjust atau diubah.
+3. Cenderung digunakan untuk menampilkan data yang terstruktur dan jelas dengan implementasi yang sederhana(e.g. navigation bar suatu web, tombol,dan lainnya).
+
+- Grid Layout
+Grid layout merupakan sistem layout yang cenderung bersifat 2 dimensi dan dapat mengatur elemen-elemen yang ada dengan mendefinisikan struuktur untuk baris dan kolom. Sistem layout ini biasanya digunakan untuk desain yang lumayan kompleks.
+Fungsi :
+1. Memberikan fleksibilitas untuk mengatur padding antar elemen serta memberikan nama sebagai identifier terhadap area tertentu dalam layout.
+2. Menjadikan tempalte menjadi reusable untuk halaman lainnya.
+3. Cenderung digunakan untuk menampilkan data dengan variasi ukuran antar elemen yang lebih kompleks (e.g. layout opsi ukuran foto beserta dengan representasi ukurannya, halaman blog atau website, dan lainnya).

@@ -1,73 +1,42 @@
 {% extends 'base.html' %}
- {% block content %}
- <h1>Lodon Mart</h1>
+{% load static %}
 
- <h5>NPM: </h5>
- <p>{{ npm }}<p>
-
- <h5>Name:</h5>
- <p>{{ name }}</p>
-
- <h5>Class:</h5>
- <p>{{ class }}</p>
-
-{% if not products %}
-<br>
-<p>Belum ada data product pada lodon mart.</p>
-
-{% else %}
-
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-</style>
-
-<table>
-    <br>
-  <tr>
-    <th>name</th>
-    <th>price</th>
-    <th>description</th>
-  </tr>
-
-  {% comment %} Berikut cara memperlihatkan data product di bawah baris ini 
-  {% endcomment %} 
-  {% for each_product in products %}
-  <tr>
-    <td>{{each_product.name}}</td>
-    <td>{{each_product.price}}</td>
-    <td>{{each_product.description}}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
-
-<br />
-
-<a href="{% url 'main:create_product' %}">
-  <button>Add New Product</button>
-</a>
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-
+{% block meta %}
+<title>LODON MART</title>
+{% endblock meta %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="overflow-x-hidden px-4 md:px-8 pb-8 pt-24 min-h-screen bg-gray-100 flex flex-col">
+  <div class="p-2 mb-6 relative">
+    <div class="relative grid grid-cols-1 z-30 md:grid-cols-3 gap-8">
+      {% include "card_info.html" with title='NPM' value=npm %}
+      {% include "card_info.html" with title='Name' value=name %}
+      {% include "card_info.html" with title='Class' value=class %}
+    </div>
+  
+    
+</div>
+  <div class="flex justify-between items-center mb-6 px-3">
+    <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg py-2 px-4 overflow-hidden border-2 border-indigo-900 w-fit">
+        <h1 class="text-white text-center">Last Login: {{ last_login }}</h1>
+    </div>
+    <a href="{% url 'main:create_product' %}" class="bg-white hover:bg-white-700 text-gray-900 font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 border-2 border-gray-900 ml-4">
+        Add New Product
+    </a>
+  </div>
+    
+    {% if not products %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/sedih-banget.png' %}" alt="Sad face" class="w-256 h-256 mb-4"/>
+        <p class="text-center text-gray-600 mt-4 text-3xl">Belum ada data product pada lodon mart</p>
+        <p class="text-center text-gray-600 mt-4 text-3xl">Ini Sangat Kodon</p>
+    </div>
+    {% else %}
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+        {% for each_product in products %}
+            {% include 'card_product.html' with each_product=each_product %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
 {% endblock content %}
