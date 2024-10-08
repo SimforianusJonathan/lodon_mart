@@ -917,3 +917,190 @@ Fungsi :
 1. Memberikan fleksibilitas untuk mengatur padding antar elemen serta memberikan nama sebagai identifier terhadap area tertentu dalam layout.
 2. Menjadikan tempalte menjadi reusable untuk halaman lainnya.
 3. Cenderung digunakan untuk menampilkan data dengan variasi ukuran antar elemen yang lebih kompleks (e.g. layout opsi ukuran foto beserta dengan representasi ukurannya, halaman blog atau website, dan lainnya).
+
+## TUGAS 5
+
+### Step by Step mengubah kode cards data mood agar dapat mendukung AJAX GET dan data yang diambil hanyalah data milik pengguna yang logged-in
+
+Disclaimer :
+- Pastikan tidak ada fungsi lain pada views.py direktori aplikasi yang menampilkan produk berbarengan dengan saat fungsi lain di views.py untuk menampilkan data produk dengan format yang berbeda di halaman template html.
+- memiliki salah satu fungsi di views.py untuk menampilkan data dengan format JSON yang berisikan 
+contoh kode :
+```python
+def show_json(request):
+    products =  Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", products), content_type="application/json")
+```
+keterangan :
+- simpan products berisi produk milik user yang sedang login, lalu return berupa respons http untuk membuat produk dalam format JSON.
+
+1. Membuka template html tempat menampilkan card product (e.g. main.html) di direktori aplikasi (e.g. main).
+2. Menghapus block kode dengan logika untuk menampilkan card product menggunakan halaman html lain dengan template tag "%include"
+3. Mengganti kode di nomor 2 dengan tag div dengan id yang diingikan sebagai identifier card product (e.g. product_card)
+4. Jika template html menggunakan "block content", tambahkan tag scripts di bagian bawah sebelum block "endblock".
+5. Tambahkan isi tag script tersebut dengan fungsi asinkronus (e.g. getProducts()) yang akan return hasil fetch dari url lokasi fungsi yang mengembalikan product dengan format JSON sebagai respons yang di return (e.g. fungsi = show_json, url = "main:show_json"; main = contoh nama direktori aplikasi) lalu setelah promise / respons  didapatkan, ubah menjadi objek JSON.
+Note : Pastikan sudah memiliki fungsi di views.py direktori aplikasi yang berfungsi untuk menampilkan data produk dengan JSON.
+6. Menambahkan fungsi baru (e.g. refreshProducts) lagi pada tag script untuk melakukan refresh data produk secara asinkronus. Dimulai dengan mengosongkan konten dari isi tag div dan atribut "class" nya () dengan identifier product card pada tahap 3.
+contoh kode:
+```javascript
+    document.getElementById("nama_id").innerHTML = "";
+    document.getElementById("nama_id").className = "";
+    ...
+```
+7. Membuat variabel untuk produk-produk yang ingin ditampilkan dengan menggunakan "await" dan memanggil fungsi pertama di atasnya untuk mendapatkan produk dengan format JSON (e.g. getProducts()) lalu buat variabel baru untuk menyimpan string berisi kode html dan className yang dinisiasi dengan value string kosong.
+contoh kode :
+```javascript
+    ...
+    const products = await getProducts();
+    let htmlString = "";
+    let classNameString = "";
+    ...
+```
+8. buat 2 kondisi dengan if else. Jika panjang dari variabel "products" panjangnya 0 (tidak ada produk) dan juga jika ada panjangnya lebih dari 0 (ada produk). Tambahkan classNameString dan htmlString sesuai dengan atribut class dan kode html pada halaman html yang sebelumnya digunakan sebagai format untuk menampilkan card products (e.g. card_product.html).
+9. Khusus untuk user yang memiliki produk, tambahkan for loop enhanced untuk tiap item pada variabel ```const products``` untuk ditambahkan kode berisi format product card dari "card_product.html" untuk masing-masing item.Pastikan ubah penamaan untuk mengakses field dari masing-masing item product menggunakan format ${}, bukan {{}}
+contoh kode :
+```javascript
+    ...
+    moodEntries.forEach((item) => {
+        ...
+        ${item.field.salah_satu_field_pada_model}
+        ...
+    });
+    ...
+
+```
+10. Bagian akhir fungsi tambahkan isi kode dalam tag div beserta atribut class-nya yang memiliki identifier product cards yang sebelumnya telah dibuat dengan variabel htmlString dan classNameString. Lalu panggil fungsi tersebut sekali setelah dibuat.
+contoh kode:
+```javascript
+...
+refreshProducts(){
+    ...
+    document.getElementById("nama_id").innerHTML = htmlString;
+    document.getElementById("nama_id").className = classNameString;
+    ...
+}
+refreshProducts();
+```
+
+### Step by Step membuat sebuah tombol yang membuka sebuah modal dengan form untuk menambahkan mood.
+1. Buka file html tempat kita menambahkan tombol untuk menambah product dengan AJAX. (Pastikan suadh ada button khusus untuk menambah produk baru untuk user dengan atribut data-modal-target = "crudModal" dan atribut data-modal-toggle= "crudModal").
+2. Buatlah tag div dengan identifier (e.g. crudModal) dan di dalamnya dengan identifier lagi (e.g. crudModalContent) (berikan styling prefernsi).
+3. Buatlah tag div baru untuk bagian header berisi keterangan untuk menambah produk baru(e.g. dengan tag <h3></h3>) dan button untuk menutup modal (e.g. berbentuk cross) dengan identifier (e.g. closeModalButton).
+4. Buatlah tag div untuk bagian body yang beguna untuk menampung form(tag <form>) untuk memasukan data produk baru yang berisi 3 input dengan identifier nama produk, harga produk, dan deskripsi produk yang setiap inputnya diberi label dan bersifat wajib diisi (required).
+5. Buatlah tag div untuk bagian footer yang berisi 2 button. Button pertama untuk menggagalkan upaya untuk pembuatan produk baru untuk user dan button kedua untuk melakukan submit dan menyimpan entri produk baru yang terhubung dengan objek productForm yang telah dibuat di direktori aplikasi file forms.py (atribut form ="productForm").
+
+### Step by Step Membuat fungsi view baru untuk menambahkan mood baru ke dalam basis data.
+1. Membuka views.py pada direktori aplikasi (e.g. main).
+2. import csrf_exempt dari modul django.views.decorators.csrf dan import require_POST dari modul django.views.decorators.http.
+3. Tambahkan 2 dekorator tersebut sebelum membuat fungsi.
+4. Buat fungsi dengan nama "add_product_ajax" dengan parameter request.
+5. Inisiasi variabel name,price,dan description (atribut model di main.models) dengan value ```request.POST.get("nama_atribut_model")``` dan untuk definsikan user```user =request.user```.
+6. Membuat produk baru dengan membuat entri baru untuk produk (e.g. ```Product(name=..., price=..., description=..., user = user)```).
+7. Save produk baru yang dibuat dan return respon http dengan status 201 dan tulisan binary "CREATED".
+
+### Step by Step membuat path /create-product-ajax/ yang mengarah ke fungsi view yang baru kamu buat.
+1. Membuka urls.py di direktori aplikasi (e.g. main).
+2. import fungsi add_product_ajax dari main.views.
+3. dalam list URL_patterns =[...], tambahkan kode :
+```python
+...
+path('create-product-ajax',add_product_ajax,name='add_product_ajax'),
+...
+```
+keterangan :
+path(...) -> Mendefiniskan pola url
+'create-product-ajax' -> Pola URL yang didefinisikan.
+add_product_ajax -> fungsi pada views.py yang dipanggil saat url ini diakses
+name = 'show-add_product_ajax' -> nama yang diberikan kepada pola url yang didefinisikan ini
+
+### Step by Step Menghubungkan form yang telah kamu buat di dalam modal kamu ke path /create-product-ajax/
+1. Membuka template html tempat menampilkan card product dan ada button untuk menambahkan entri produk baru dengan ajax (e.g. main.html) di direktori aplikasi (e.g. main).
+contoh kode :
+```javascript
+const modal = document.getElementById('crudModal');
+const modalContent = document.getElementById('crudModalContent');
+```
+2. pada tag script (javascript), Tambahkan variabel modal dan modalContent untuk menyimpan elemen modal utama dengan ID crudModal dan Bagian dari konten modal yang berisi form.
+3. Membuat fungsi baru bernama showmodal yang berguna untuk menghapus class hidden pada elemen modal sehingga terlihat saat memberi transisi fade in untuk menampilkannya ke halaman web user (preferensi styling).
+4. Membuat fungsi baru hidemodal yang berguna untuk memberi efek transisi fade out dan menambahkan class hidden pada elemen modal untuk menyembunyikannya menyeluruh dari halaman web.
+5. Menambahkan eventListener pada tombol dengan identifier untuk tombol yang melakukan "cancel" dalam pembuatan produk ataupun keluar dari elemen modal (bukan benar benar keluar melainkan menghilangkan dengan transisi).
+contoh kode 
+```javascript
+document.getElementById("cancelButton").addEventListener("click", hideModal);
+document.getElementById("closeModalButton").addEventListener("click", hideModal);
+```
+
+### Step by Step membuat fungsi untuk refresh pada halaman utama secara asinkronus untuk menampilkan daftar produk terbaru tanpa reload halaman utama secara keseluruhan.
+1. Buka halaman html tempat menampilkan card product dan  menambahkan entri produk baru dengan / tidak dengan ajax (e.g. main.html) di direktori aplikasi (e.g. main).
+2. Pada tag script, tambahkan fungsi baru (e.g. addProduct) yang diawali dengan melakukan fetch API dengan parameter template tag html berisi nama url tempat fungsi add_product_ajax di views.py dilakukan yang telah didefiniskan pola url nya di urls.py direktori aplikasi. Lalu respons yang diterima(promise) telah didapat, akan dipanggil fungsi refreshProduct untuk merefresh data produk baru secara asinkronus tanpa harus refresh halaman web.
+contoh kode :
+```javascript
+...
+fetch("{% url 'main:add_product_ajax' %}", {
+      method: "POST",
+      body: new FormData(document.querySelector('#productForm')),
+    })
+    .then(response => refreshProduct())
+...
+```
+keterangan :
+- body: new FormData(document.querySelector('#productForm')): Mengambil semua data dari form dengan ID productForm dan mengirimnya sebagai FormData.
+3. Melakukan reset form "productForm" dari forms.py direktori aplikasi dan menutup modal yang berisi form dengan menekan tombol yang memiliki atribut yang digunakan untuk mengontrol penampilan modal. 
+4. Retun false di akhir fungsi untuk mencegah tindakan default dari form (refresh ulang halman atau navigasi ulang ).
+contoh kode:
+```javascript
+...
+document.getElementById("productForm").reset(); 
+document.querySelector("[data-modal-toggle='crudModal']").click();
+return false;
+...
+```
+
+5. Menambahkan sebuah event listener pada form yang ada di modal untuk menjalankan fungsi addProduct().
+contoh kode :
+```javascript
+...
+document.getElementById("productForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addProduct();
+  })
+...
+```
+
+###  Manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web
+1. Javascript mengimplementasikan halaman web yang responsif dengan user secara real-time melalui event driven programming (e.g. button, submit form, dan lainnya). Serta dapat menciptakan beberapa animasi yang dapat menambahkan pengalaman pengguna dengan lebih menarik. 
+2. Manipulasi Document Object Model yang memungkinkan kita mengubah style dan konten halaman web secara dinamis yang juga dapat beradaptasi terhadap perubahan ukuran layar, preferensi user, dan data user. Kita juga dapat menambahkan elemen html baru ke dalam halaman web secara dinamis (e.g. menampilkan informasi atas form yang telah kita buat setelah tombol submit dipencet dengan struktur html dan css yang berbeda). Hal tersebut dapat dilakukan karena Javascript sendiri terintegrasi dengan baik dengan html dengan css.
+3. Client-Side data manipulation
+Memungkinkan client melakukan perubahan data lewat browser pengguna saat halaman web dibuka sehingga aplikasi web dapat berjalan tanpa modifikasi yang signifikan.
+4. Framework dan library yang cukup banyak dan cukup mudah digunakan dan lengkap (e.g. React.js, Angular, Vue.js, dan jQuery).
+5. Real - Time data update menggunakan AJAX dengan membuat request pada fungsi asinkronus ke server tanpa harus melakukan redirecting ke halaman lain (jika bisa) dan tanpa harus melakukan refresh halaman untuk mensinkronkan data yang telah di update di web.
+6. Javascript juga dapat digunakan untuk mengembangkan aplikasi mobile dengan framework React Native. dan juga javascript  dapat digunakan untuk membuat game via browser dengan bantuan HTML-5.
+
+### Penggunaan await ketika kita menggunakan fetch()
+Saat kita melakukan fetch() pada fungsi javascript kita, kita perlu menggunakan syntax "await". Hal tersebut memiliki tujuan yang cukup berpengaruh terhadap output yang akan diberikan ke halaman web. 
+
+Fungsi fetch() sendiri digunakan untuk melakukan permintaan http ke server dan mengembalikan suatu promise (objek yang merepresentasiikan operasi asinkron yang akan diselesaikan ke depannya. Bisa berupa status pending jika proses masih dilakukan, fulfilled yang akan mengembalikan objek response dari http serbver, atau rejected yang biasanya ditangkap oleh catch error block).
+
+Fetch() biasanya diikuti dengan penggunaan await. Dengan menggunakan "await", Javascript akan menunggu hingga promise tersebut selesai (fulfilled atau rejected) sebelum melanjutkan ke baris berikutnya. Dengan adanya "await", kita bisa yakin bahwa data dari fetch() sudah siap digunakan / sudah menyelesaikan proses fetch terlebih dahulu baru melanjutkan ke potongan kode yang menangani objek yang dikembalikan dari proses fetch (jika status fulfilled).
+
+Jika tida menggunakan await di bagian awal fetch(), proses fetch() akan mengembalikan sebuah promise yang belum terselesaikan. Kode akan segera melanjutkan eksekusi ke baris berikutnya tanpa menunggu hasil dari fetch(). Akibatnya, data dari server mungkin belum siap ketika kita mencoba mengaksesnya. untuk menangani hal tersebut, kita harus menggunakan .then() untuk menangani promise yang di-fetch.
+
+### Menggunakan decorator csrf_exempt pada view yang akan digunakan untuk AJAX POST
+
+Django secara otomatis melindungi aplikasi dari serangan ini menggunakan token CSRF. Setiap kali form dikirimkan melalui POST, Django memeriksa apakah token CSRF yang valid telah dikirim untuk memastikan bahwa permintaan POST tersebut berasal dari sumber yang tepercaya (biasanya halaman yang sama). 
+
+Decorator csrf_exempt dalam Django (dan framework web lainnya) digunakan untuk menonaktifkan perlindungan CSRF pada sebuah view. Jika tidak ada token CSRF yang dikirimkan bersama dengan permintaan, Django akan menolak request dan mengembalikan error 403 Forbidden yang berarti request tidak diverifikasi sebagai aman. Ini terjadi karena Django tidak dapat memverifikasi bahwa permintaan tersebut aman dan berasal dari sumber yang sah.
+
+Selain itu penggunaan decorator csrf_exempt juga dapat digunakan apabila kita mengakses view dari domain ekseternal (e.g. iframe) kita perlu validasi keamanan tambahan dengan csrf_exempt. Lalu csrf_exempt dapat kita gunakan pada fungsi view yang mengubah data yang tidak terlalu sensitif(e.g. produk favorit). Walaupun begitu, kita dapat tetap menggunakan CSRF protection dalam permintaan AJAX, solusinya adalah mengirimkan token CSRF secara eksplisit dalam permintaan AJAX (e.g menggunakan JQuery).
+
+### Pembersihan data input pengguna dilakukan di depan(frontend) dan belakang (backend)
+
+Pembersihan data inputperlu biasanya hanya dilakukan melalui dilakukan pada bagian depan (frontend). Hal tersebut dilakukan karena kode JavaScript di frontend untuk validasi input dari user. Namun terdapat celah yang mungkin dapat dengan mudah dimodifikasi oleh pengguna dengan menggunakan alat seperti developer tools di browser, atau melalui request HTTP langsung dengan tools seperti Postman atau cURL. Sehingga dapat menonaktifkan logika validasi pada bagian frontend dan input data sehingga bisa terkirim langsung ke server.
+
+Oleh karena itu diperlukan juga pembersihan data input pada bagian belakang layar / logika aplikasi web (backend). Hal tersebut dapat memberikan beberapa keuntungan, seperti melindungi suatu aplikasi web dari beberapa tipe serangan siber (sql injection dan XSS). backend yang berfungsi sebagai lapisan terakhir yang mengontrol dan mengelola integritas data perlu memastian kembali apakah input data dari client-site sudah valid dan sesuai standar. 
+
+Selain itu, aplikasi tidak hanya terbatas pada akses via website / browser, namun ada juga versi mobile/API nya yang mungkin tidak dapat bergantung pada pembersihan data input di sisi klien. Oleh karena itu diperlukan pembersihan data input dari backend.
+
+
+
+

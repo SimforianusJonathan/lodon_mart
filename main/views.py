@@ -11,28 +11,21 @@ import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from main.utils import format_price
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
+from .models import Product  
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+import json
+
 
 @login_required(login_url='/login')
 def show_main(request):
-    products =  Product.objects.filter(user=request.user)
-
-    formatted_products = [
-        {
-            'id': product.id,
-            'name': product.name,  # Replace with actual field names
-            'price': product.price,
-            'formatted_price': format_price(product.price),
-            'description':product.description
-            # Add any other fields you need
-        }
-        for product in products
-    ]
-
     context = {
         'name': request.user.username,
         'npm' : '23062217430',
         'class': 'PBP E',
-        'products': formatted_products,
         'last_login': request.COOKIES['last_login'],
     }
 
@@ -51,12 +44,12 @@ def create_product(request):
     return render(request, "create_product.html", context)
 
 def show_xml(request):
-    data = Product.objects.all()
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+    products =  Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("xml", products), content_type="application/xml")
 
 def show_json(request):
-    data = Product.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    products =  Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", products), content_type="application/json")
 
 def show_xml_by_id(request, id):
     data = Product.objects.filter(pk=id)
@@ -88,6 +81,8 @@ def login_user(request):
         response = HttpResponseRedirect(reverse("main:show_main"))
         response.set_cookie('last_login', str(datetime.datetime.now()))
         return response
+      else:
+        messages.error(request, "Invalid username or password. Please try again.")
 
    else:
       form = AuthenticationForm(request)
@@ -122,3 +117,49 @@ def delete_product(request, id):
     product.delete()
     # Kembali ke halaman awal
     return HttpResponseRedirect(reverse('main:show_main'))
+
+@csrf_exempt
+@require_POST
+def add_product_ajax(request):
+    name = strip_tags(request.POST.get("name"))
+    price = request.POST.get("price")
+    description = strip_tags(request.POST.get("description"))
+    user = request.user
+
+    new_product = Product(
+        name=name, price=price,
+        description=description,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+
+# You can use this to exempt CSRF verification for this view, or handle CSRF tokens properly.
+@require_POST  # Ensures that only POST requests are accepted.
+def update_star_status(request, id):
+    try:
+        # Get the product instance based on the provided product ID.
+        product = Product.objects.get(pk = id)
+        
+        # Load the request body and extract the isStarred status.
+        data = json.loads(request.body)
+        is_starred = data.get('isStarred')
+
+        # Check if is_starred is not None before updating
+        if isinstance(is_starred, bool):
+            # Update the is_starred attribute
+            product.isStarred = is_starred
+            product.save()  # Save changes to the database.
+
+            return JsonResponse({'success': True, 'isStarred': product.isStarred})
+
+        return JsonResponse({'success': False, 'error': 'isStarred value not provided'}, status=400)
+
+    except Product.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Product not found'}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+

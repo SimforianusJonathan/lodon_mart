@@ -8,6 +8,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.IntegerField()
     description = models.TextField()
+    isStarred = models.BooleanField(default=False)
     
     @property
     def __str__(self):
